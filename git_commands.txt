@@ -2,3 +2,4 @@ git init 											# initialize directory
 git add . 										# add the files in the local repo and stages them for commit
 git commit -m "Initial Commit"
 git remote add origin URL
+git push/pull origin master
