@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
-[RequireComponent(typeof(PolygonCollider2D))]
 [RequireComponent(typeof(Rigidbody2D))]
 
 public class Character : MonoBehaviour {
@@ -9,7 +9,14 @@ public class Character : MonoBehaviour {
     public Rigidbody2D rigidBody; // Not Kinematic: moves not by transform, but by physics
     public CollisionInfo collisions;
 
-    /*Movement Variables*/
+    /* Colliders */
+    public List<GameObject> ChildrenColliders;
+    public PlayerCollider topCollider;
+    public PlayerCollider botCollider;
+    public PlayerCollider leftCollider;
+    public PlayerCollider rightCollider;
+
+    /* Movement Variables */
     public float moveSpeed = 10;    // Horizontal speed.
     public float sprintSpeed = 20;
     public float activeSpeed;
@@ -17,7 +24,7 @@ public class Character : MonoBehaviour {
     float directionFacing = 1;
     
     
-    /*Jump Variables*/
+    /* Jump Variables */
     public float lateralAccelAirborne = 60;
     public float lateralAccelGrounded = 60;
 
@@ -31,6 +38,19 @@ public class Character : MonoBehaviour {
 
     /** Called on Frame initialization. **/
     void Start() {
+        /* Set child colliders. */
+        foreach (Transform child in transform) {
+            if (child.tag == "PlayerCollider") {
+                ChildrenColliders.Add(child.gameObject);
+            }
+        }
+
+        topCollider = ChildrenColliders[0].GetComponent<PlayerCollider>();
+        botCollider = ChildrenColliders[1].GetComponent<PlayerCollider>();
+        leftCollider = ChildrenColliders[2].GetComponent<PlayerCollider>();
+        rightCollider = ChildrenColliders[3].GetComponent<PlayerCollider>();
+        
+
         /* Set collision defaults. */
         collisions.isTouchingTop = false;
         collisions.isTouchingRight = false;
@@ -51,53 +71,46 @@ public class Character : MonoBehaviour {
 
     /** Update is called once per frame **/
     void Update() {
+        checkCollisionsEnter();
+        checkCollisionsExit();
         calcJump();
     }
 
     /** Called on Player collision with object. **/
-    void OnCollisionEnter2D(Collision2D coll) {
-        if (coll.gameObject.tag == "Platform") {
-            Vector2 dir = coll.contacts[0].normal; // Direction of Collision from contact point.
-
-            if (Mathf.Round(dir.y) == 1) {         // Bottom Collision
-                velocity.y = 0;
-                collisions.isGrounded = true;
-            }
-            else if (Mathf.Round(dir.y) == -1) {   // Top Collisions
-                velocity.y = 0;
-                collisions.isTouchingTop = true;
-            }
-            if (Mathf.Round(dir.x) == 1) {         // Left Collisions
-                collisions.isTouchingLeft = true;
-                collisions.onWall = true;
-            }
-            else if (Mathf.Round(dir.x) == -1) {   // Right Collisions       
-                collisions.isTouchingRight = true;
-                collisions.onWall = true;
-            }
-            //float slopeAngle = Vector2.Angle(dir, Vector2.up);
+    void checkCollisionsEnter() {
+        if (botCollider.isTouching && !collisions.isGrounded) {         // Bottom Collision
+            velocity.y = 0;
+            collisions.isGrounded = true;
+        }
+        if (topCollider.isTouching && !collisions.isTouchingTop) {   // Top Collisions
+            velocity.y = 0;
+            collisions.isTouchingTop = true;
+        }
+        if (leftCollider.isTouching && !collisions.isTouchingLeft) {         // Left Collisions
+            collisions.isTouchingLeft = true;
+            collisions.onWall = true;
+        }
+        if (rightCollider.isTouching && !collisions.isTouchingRight) {   // Right Collisions       
+            collisions.isTouchingRight = true;
+            collisions.onWall = true;
         }
     }
 
     /** Called on Player leaving collision with an object. **/
-    void OnCollisionExit2D(Collision2D coll) {
-        if (coll.gameObject.tag == "Platform") {
-            Vector2 dir = coll.contacts[0].normal; // Direction of Collision from contact point.
-
-            if (Mathf.Round(dir.y) == 1) {         // Bottom Collision
-                collisions.isGrounded = false;
-            }
-            else if (Mathf.Round(dir.y) == -1) {   // Top Collisions
-                collisions.isTouchingTop = false;
-            }
-            else if (Mathf.Round(dir.x) == 1) {    // Left Collisions
-                collisions.isTouchingLeft = false;
-                collisions.onWall = false;
-            }
-            else if (Mathf.Round(dir.x) == -1) {   // Right Collisions
-                collisions.isTouchingRight = false;
-                collisions.onWall = false;
-            }
+    void checkCollisionsExit() {
+        if (!botCollider.isTouching && collisions.isGrounded) {         // Bottom Collision
+            collisions.isGrounded = false;
+        }
+        if (!topCollider.isTouching && collisions.isTouchingTop) {   // Top Collisions
+            collisions.isTouchingTop = false;
+        }
+        if (!leftCollider.isTouching && collisions.isTouchingLeft) {    // Left Collisions
+            collisions.isTouchingLeft = false;
+            collisions.onWall = false;
+        }
+        if (!rightCollider.isTouching && collisions.isTouchingRight) {   // Right Collisions
+            collisions.isTouchingRight = false;
+            collisions.onWall = false;
         }
     }
 
