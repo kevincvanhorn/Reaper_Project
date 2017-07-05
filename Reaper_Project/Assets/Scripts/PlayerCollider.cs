@@ -22,6 +22,7 @@ public class PlayerCollider : MonoBehaviour {
     void OnTriggerEnter2D(Collider2D coll) {
         OnEdgeEnter();
         isTouching = true;
+        //print("Trigger from: "+this.name); 
     }
 
     /** Called on Player collision with object. **/

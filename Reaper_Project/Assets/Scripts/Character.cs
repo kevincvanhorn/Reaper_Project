@@ -94,20 +94,22 @@ public class Character : MonoBehaviour {
         collisions.isGrounded = true;
     }
     void onLeftCollisionEnter() {
+        velocity.x = 0;
         collisions.isTouchingLeft = true;
         collisions.onWall = true;
     }
     void onRightCollisionEnter() {
+        velocity.x = 0;
         collisions.isTouchingRight = true;
         collisions.onWall = true;
     }
 
     /** Called on Player leaving collision with an object. **/
     void onTopCollisionExit() {
-        collisions.isGrounded = false;
+        collisions.isTouchingTop = false;
     }
     void onBotCollisionExit() {
-        collisions.isTouchingTop = false;
+        collisions.isGrounded = false;
     }
     void onLeftCollisionExit() {
         collisions.isTouchingLeft = false;
