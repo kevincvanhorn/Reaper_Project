@@ -49,7 +49,17 @@ public class Character : MonoBehaviour {
         botCollider = ChildrenColliders[1].GetComponent<PlayerCollider>();
         leftCollider = ChildrenColliders[2].GetComponent<PlayerCollider>();
         rightCollider = ChildrenColliders[3].GetComponent<PlayerCollider>();
-        
+
+        topCollider.OnEdgeEnter += onTopCollisionEnter;
+        botCollider.OnEdgeEnter += onBotCollisionEnter;
+        leftCollider.OnEdgeEnter += onLeftCollisionEnter;
+        rightCollider.OnEdgeEnter += onRightCollisionEnter;
+
+        topCollider.OnEdgeExit += onTopCollisionExit;
+        botCollider.OnEdgeExit += onBotCollisionExit;
+        leftCollider.OnEdgeExit += onLeftCollisionExit;
+        rightCollider.OnEdgeExit += onRightCollisionExit;
+
 
         /* Set collision defaults. */
         collisions.isTouchingTop = false;
@@ -71,47 +81,41 @@ public class Character : MonoBehaviour {
 
     /** Update is called once per frame **/
     void Update() {
-        checkCollisionsEnter();
-        checkCollisionsExit();
         calcJump();
     }
 
     /** Called on Player collision with object. **/
-    void checkCollisionsEnter() {
-        if (botCollider.isTouching && !collisions.isGrounded) {         // Bottom Collision
-            velocity.y = 0;
-            collisions.isGrounded = true;
-        }
-        if (topCollider.isTouching && !collisions.isTouchingTop) {   // Top Collisions
-            velocity.y = 0;
-            collisions.isTouchingTop = true;
-        }
-        if (leftCollider.isTouching && !collisions.isTouchingLeft) {         // Left Collisions
-            collisions.isTouchingLeft = true;
-            collisions.onWall = true;
-        }
-        if (rightCollider.isTouching && !collisions.isTouchingRight) {   // Right Collisions       
-            collisions.isTouchingRight = true;
-            collisions.onWall = true;
-        }
+    void onTopCollisionEnter() {
+        velocity.y = 0;
+        collisions.isTouchingTop = true;
+    }
+    void onBotCollisionEnter() {
+        velocity.y = 0;
+        collisions.isGrounded = true;
+    }
+    void onLeftCollisionEnter() {
+        collisions.isTouchingLeft = true;
+        collisions.onWall = true;
+    }
+    void onRightCollisionEnter() {
+        collisions.isTouchingRight = true;
+        collisions.onWall = true;
     }
 
     /** Called on Player leaving collision with an object. **/
-    void checkCollisionsExit() {
-        if (!botCollider.isTouching && collisions.isGrounded) {         // Bottom Collision
-            collisions.isGrounded = false;
-        }
-        if (!topCollider.isTouching && collisions.isTouchingTop) {   // Top Collisions
-            collisions.isTouchingTop = false;
-        }
-        if (!leftCollider.isTouching && collisions.isTouchingLeft) {    // Left Collisions
-            collisions.isTouchingLeft = false;
-            collisions.onWall = false;
-        }
-        if (!rightCollider.isTouching && collisions.isTouchingRight) {   // Right Collisions
-            collisions.isTouchingRight = false;
-            collisions.onWall = false;
-        }
+    void onTopCollisionExit() {
+        collisions.isGrounded = false;
+    }
+    void onBotCollisionExit() {
+        collisions.isTouchingTop = false;
+    }
+    void onLeftCollisionExit() {
+        collisions.isTouchingLeft = false;
+        collisions.onWall = false;
+    }
+    void onRightCollisionExit() {
+        collisions.isTouchingRight = false;
+        collisions.onWall = false;
     }
 
     /** Calculates movement and updates rigidbody velocity. **/

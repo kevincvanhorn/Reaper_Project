@@ -5,6 +5,10 @@ using UnityEngine;
 public class PlayerCollider : MonoBehaviour {
     public bool isTouching; // True if collider is touching an object.
 
+    public delegate void TriggerEvent();
+    public event TriggerEvent OnEdgeEnter;
+    public event TriggerEvent OnEdgeExit;
+
     // Use this for initialization
     void Start() {
         isTouching = false;
@@ -16,11 +20,13 @@ public class PlayerCollider : MonoBehaviour {
 
     /** Called on Player collision with object. **/
     void OnTriggerEnter2D(Collider2D coll) {
+        OnEdgeEnter();
         isTouching = true;
     }
 
     /** Called on Player collision with object. **/
     void OnTriggerExit2D() {
+        OnEdgeExit();
         isTouching = false;
     }
 }
