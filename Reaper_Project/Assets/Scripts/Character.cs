@@ -4,6 +4,8 @@ using System.Collections.Generic;
 
 [RequireComponent(typeof(Rigidbody2D))]
 
+// For wall collide store collision velocity, stop, then add that velocity as modifier to wall jump
+
 public class Character : MonoBehaviour {
     public LayerMask collisionMask;
     public Rigidbody2D rigidBody; // Not Kinematic: moves not by transform, but by physics
@@ -20,7 +22,7 @@ public class Character : MonoBehaviour {
     public float moveSpeed = 10;    // Horizontal speed.
     public float sprintSpeed = 20;
     public float activeSpeed;
-    Vector3 velocity;
+    public Vector3 velocity;
     float directionFacing = 1;
     
     
